@@ -16,7 +16,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.decodeFromString
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.net.URLEncoder
@@ -25,8 +24,7 @@ import java.util.concurrent.TimeUnit
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.GoogleMap
-import com.google.maps.android.compose.rememberCameraPositionState
+
 
 // JSON парсер
 private val json = Json { ignoreUnknownKeys = true }
@@ -58,7 +56,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val routes = mutableStateListOf<RouteDetail>()
     val savedRoutes = mutableStateListOf<RouteDetail>()
 
-    // кеш температур по городу (сессия). Можно дополнить меткой времени для TTL.
+    // кеш температур по городу
     private val cityTemperatures = mutableStateMapOf<String, String>()
 
     // OkHttp client с таймаутами (быстрый и защищённый от долгих ожиданий)
@@ -164,7 +162,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             selectedCity = city
 
-            // 1) мгновенно загрузим маршруты из БД и покажем UI с кешированной температурой (или "—")
             val entities = routeDao.getRoutesByCity(city)
             val cached = cityTemperatures[city] ?: "—"
             val list = entities.map { e ->
@@ -183,16 +180,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             routes.addAll(list)
             cityTemperature = cached
 
-            // 2) если в кеше нет (или хочешь обновить) — запустим быстрый фоновой запрос
             if (cached == "—") {
-                // fetch в фоне; функция имеет встроенные таймауты
                 val temp = fetchTempOpenMeteoOkHttp(city)
-                // записываем в кеш
                 cityTemperatures[city] = temp
                 cityTemperature = temp
 
                 if (temp != "—") {
-                    // Обновляем существующие элементы routes (копирование с новым weather)
                     val updated = routes.map { r -> if (r.city == city) r.copy(weather = temp) else r }
                     routes.clear()
                     routes.addAll(updated)
@@ -224,7 +217,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             val entities = savedRouteDao.getAllSavedRoutes()
             val list = entities.map { entity ->
                 RouteDetail(
-                    id = entity.id,                  // <- вот это нужно добавить
+                    id = entity.id,
                     title = entity.title,
                     city = entity.city,
                     description = entity.description,
@@ -257,79 +250,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
     override fun onCleared() {
         super.onCleared()
-        // okHttp не требует явного close(), но можно по желанию очищать ресурсы
     }
 }
 
 
 
-/**
- * class MainViewModel : ViewModel() {
- *     var selectedCity by mutableStateOf<String?>(null)
- *         private set
- *
- *     val routes = mutableStateListOf<RouteDetail>()
- *
- *     val savedRoutes = mutableStateListOf<RouteDetail>()
- *
- *     init {
- *         routes.addAll(sampleRoutes())
- *     }
- *
- *     fun selectCity(city: String) {
- *         selectedCity = city
- *     }
- *
- *     fun saveRoute(route: RouteDetail) {
- *         if (!savedRoutes.contains(route)) {
- *             savedRoutes.add(route)
- *         }
- *     }
- *
- *     fun removeSavedRoute(route: RouteDetail) {
- *         savedRoutes.remove(route)
- *     }
- *
- *     private fun sampleRoutes(): List<RouteDetail> {
- *         return listOf(
- *             RouteDetail(
- *                 title = "Пешее путешествие по достопримечательностям у берега Енисея в Центральном районе",
- *                 city = "Красноярск",
- *                 weather = "+12",
- *                 description = "Короткое описание маршрута у берега Енисея...",
- *                 distance = "1.6 км",
- *                 stops = listOf(Stop("Набережная Енисея"), Stop("Городской театр")
- *                 ),
- *                 imageRes = R.drawable.route1
- *             ),
- *             RouteDetail(
- *                 title = "Прогулка по Театральной площади Красноярска",
- *                 city = "Красноярск",
- *                 weather = "+12",
- *                 description = "Описание прогулки по Театральной площади...",
- *                 distance = "0.7 км",
- *                 stops = listOf(Stop("Театр"), Stop("Памятник")),
- *                 imageRes = R.drawable.route2
- *             ),
- *             RouteDetail(
- *                 title = "Маршрут по Восточным столбам",
- *                 city = "Красноярск",
- *                 weather = "+12",
- *                 description = "Описание маршрута по столбам...",
- *                 distance = "1.9 км",
- *                 stops = listOf(Stop("Столбы"), Stop("Смотровая площадка")),
- *                 imageRes = R.drawable.route3
- *             ),
- *             RouteDetail(
- *                 title = "Экскурсия по самым главным музеям Красноярска",
- *                 city = "Красноярск",
- *                 weather = "+12",
- *                 description = "Маршрут по музеям города...",
- *                 distance = "2.4 км",
- *                 stops = listOf(Stop("Музей 1"), Stop("Музей 2")),
- *                 imageRes = R.drawable.route4
- *             )
- *         )
- *     }
- * }
- */
