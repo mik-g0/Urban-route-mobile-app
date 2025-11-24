@@ -19,7 +19,7 @@ import com.example.myapplication2.ui.models.MainViewModel
 import com.example.myapplication2.ui.screens.RouteListScreen
 import com.example.myapplication2.ui.screens.RouteDetailScreen
 import com.example.myapplication2.ui.screens.SavedRoutesScreen
-import com.example.myapplication2.ui.screens.MyTripScreen
+import com.example.myapplication2.ui.screens.CityMapScreen
 import com.example.myapplication2.ui.screens.AddEditRouteScreen
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -83,6 +83,10 @@ fun MyApp(vm: MainViewModel = viewModel()) {
                     onBack = { navController.popBackStack() }
                 )
             }
+            composable("city_map") {
+                CityMapScreen(vm = vm)
+            }
+
         }
     }
 }

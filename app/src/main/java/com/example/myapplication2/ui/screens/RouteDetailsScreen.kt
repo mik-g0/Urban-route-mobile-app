@@ -117,7 +117,10 @@ fun RouteDetailScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Button(
-                    onClick = { navController?.navigate("my_trip/${vm.routes.indexOf(route)}") },
+                    onClick = { vm.selectedCity?.let { city ->
+                        vm.selectCityForMap(city)
+                        navController?.navigate("city_map")
+                    } },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFAA592F)),
                     shape = RoundedCornerShape(24.dp)
                 ) {

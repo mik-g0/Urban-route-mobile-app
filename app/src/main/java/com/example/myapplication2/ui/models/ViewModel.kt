@@ -24,6 +24,9 @@ import java.nio.charset.StandardCharsets
 import java.util.concurrent.TimeUnit
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.rememberCameraPositionState
 
 // JSON парсер
 private val json = Json { ignoreUnknownKeys = true }
@@ -76,6 +79,25 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         "Самара" to "Samara",
         "Новосибирск" to "Novosibirsk"
     )
+    val cityCoordinates = mapOf(
+        "Москва" to LatLng(55.7558, 37.6173),
+        "Санкт-Петербург" to LatLng(59.9343, 30.3351),
+        "Казань" to LatLng(55.7903, 49.1347),
+        "Красноярск" to LatLng(56.0097, 92.7917),
+        "Астрахань" to LatLng(46.3496, 48.0408),
+        "Калининград" to LatLng(54.7104, 20.4522),
+        "Сочи" to LatLng(43.5855, 39.7203),
+        "Самара" to LatLng(53.1959, 50.1002),
+        "Новосибирск" to LatLng(55.0084, 82.9357)
+    )
+    // Состояние для выбранного города
+    var selectedCityLatLng by mutableStateOf<LatLng?>(null)
+
+    // Функция для выбора города и координат
+    fun selectCityForMap(city: String) {
+        selectedCity = city
+        selectedCityLatLng = cityCoordinates[city]
+    }
     private fun getEnglishCity(city: String): String {
         return cityMap[city] ?: city
     }

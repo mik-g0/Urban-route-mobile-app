@@ -63,6 +63,9 @@ dependencies {
     implementation("io.ktor:ktor-client-cio:2.3.3")
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+    implementation("com.google.android.gms:play-services-maps:18.1.0")
+    implementation("com.google.maps.android:maps-compose:2.13.0")
+
 
     // Room
     implementation("androidx.room:room-runtime:$roomVersion")

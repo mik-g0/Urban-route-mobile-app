@@ -97,9 +97,13 @@ fun SavedRoutesScreen(vm: MainViewModel, navController: NavHostController) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Button(
-                        onClick = {
-                            navController.navigate("my_trip/${vm.routes.indexOf(selectedRoute!!)}")
-                        },
+                        onClick = {  selectedRoute?.city?.let { city ->
+                            // Обновляем выбранный город и координаты для карты
+                            vm.selectCityForMap(city)
+
+                            // Переходим на экран карты
+                            navController.navigate("city_map")
+                        }},
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFAA592F)),
                         shape = RoundedCornerShape(24.dp)
                     ) {
