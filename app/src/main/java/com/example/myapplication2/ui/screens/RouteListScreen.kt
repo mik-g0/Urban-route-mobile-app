@@ -92,8 +92,17 @@ fun RouteListScreen(vm: MainViewModel, navController: NavHostController) {
                 .padding(horizontal = horizontalPadding),
             contentAlignment = Alignment.Center
         ) {
-            Text("Маршруты города $city", fontSize = 20.sp, color = Color.White)
+            Row(
+                modifier = Modifier.fillMaxSize(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text("Маршруты города $city", fontSize = 20.sp, color = Color.White)
+                // Показ температуры
+                Text(vm.cityTemperature, fontSize = 16.sp, color = Color.White)
+            }
         }
+
 
         // Нижняя панель с кнопками
         Box(

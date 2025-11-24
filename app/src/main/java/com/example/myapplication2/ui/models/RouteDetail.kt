@@ -7,5 +7,6 @@ data class RouteDetail(
     val description: String,
     val distance: String,
     val stops: List<Stop>,
-    val imageRes: Int
+    val imageRes: Int,
+    val weather: String = "—"
 )
