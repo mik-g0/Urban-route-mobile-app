@@ -23,8 +23,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.myapplication2.ui.models.MainViewModel
 import com.example.myapplication2.ui.models.RouteDetail
-import com.example.myapplication2.ui.models.Stop
-
 
 
 @Composable

@@ -20,7 +20,7 @@ import com.example.myapplication2.ui.screens.RouteListScreen
 import com.example.myapplication2.ui.screens.RouteDetailScreen
 import com.example.myapplication2.ui.screens.SavedRoutesScreen
 import com.example.myapplication2.ui.screens.MyTripScreen
-
+import com.example.myapplication2.ui.screens.AddEditRouteScreen
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,16 +47,19 @@ fun MyApp(vm: MainViewModel = viewModel()) {
                 CitySelectionScreen(
                     vm = vm,
                     onCitySelected = { city ->
-                        vm.selectCity(city)
+                        vm.loadRoutesForCity(city)
                         navController.navigate("routes")
-                    }
+                    },
+                    onAddRouteClick = { navController.navigate("add_edit_route") }
                 )
             }
 
+            // Список маршрутов
             composable("routes") {
                 RouteListScreen(vm = vm, navController = navController)
             }
 
+            // Детали маршрута
             composable(
                 route = "route_detail/{index}",
                 arguments = listOf(navArgument("index") { type = NavType.IntType })
@@ -64,32 +67,22 @@ fun MyApp(vm: MainViewModel = viewModel()) {
                 val idx = backStackEntry.arguments?.getInt("index") ?: 0
                 val route = vm.routes.getOrNull(idx)
                 if (route != null) {
-                    RouteDetailScreen(
-                        route = route,
-                        navController = navController,
-                        vm = vm,
-                    )
+                    RouteDetailScreen(route = route, navController = navController, vm = vm)
                 }
             }
 
+            // Сохраненные маршруты
             composable("saved_routes") {
                 SavedRoutesScreen(vm = vm, navController = navController)
             }
-            composable(
-                route = "my_trip/{index}",
-                arguments = listOf(navArgument("index") { type = NavType.IntType })
-            ) { backStackEntry ->
-                val idx = backStackEntry.arguments?.getInt("index") ?: 0
-                val route = vm.routes.getOrNull(idx)
-                if (route != null) {
-                    MyTripScreen(
-                        route = route,
-                        navController = navController,
-                        vm = vm
-                    )
-                }
-            }
 
+            // Добавление / редактирование маршрута
+            composable("add_edit_route") {
+                AddEditRouteScreen(
+                    vm = vm,
+                    onBack = { navController.popBackStack() }
+                )
+            }
         }
     }
 }

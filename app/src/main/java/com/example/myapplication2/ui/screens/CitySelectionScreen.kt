@@ -11,11 +11,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.myapplication2.ui.models.MainViewModel
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 
 @Composable
 fun CitySelectionScreen(
     vm: MainViewModel,
-    onCitySelected: (String) -> Unit
+    onCitySelected: (String) -> Unit,
+    onAddRouteClick: () -> Unit // коллбек для FAB
 ) {
     val cities = listOf(
         "Москва", "Санкт-Петербург", "Казань",
@@ -23,39 +26,53 @@ fun CitySelectionScreen(
         "Сочи", "Самара", "Новосибирск"
     )
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFEEE8E1))
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Box(
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .background(Color(0xFF90AFC5))
+                .fillMaxSize()
+                .background(Color(0xFFEEE8E1))
                 .padding(16.dp),
-            contentAlignment = Alignment.Center
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Выбор города", fontSize = 20.sp)
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        cities.forEach { city ->
-            Button(
-                onClick = { onCitySelected(city) },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (city == vm.selectedCity) Color(0xFF884421) else Color(0xFFF1F1F1),
-                    contentColor = if (city == vm.selectedCity) Color.White else Color.Black
-                ),
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 4.dp),
-                shape = RoundedCornerShape(8.dp)
+                    .background(Color(0xFF90AFC5))
+                    .padding(16.dp),
+                contentAlignment = Alignment.Center
             ) {
-                Text(city)
+                Text("Выбор города", fontSize = 20.sp)
             }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            cities.forEach { city ->
+                Button(
+                    onClick = { onCitySelected(city) },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (city == vm.selectedCity) Color(0xFF884421) else Color(0xFFF1F1F1),
+                        contentColor = if (city == vm.selectedCity) Color.White else Color.Black
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text(city)
+                }
+            }
+        }
+
+        // ===== FAB для добавления маршрута =====
+        FloatingActionButton(
+            onClick = onAddRouteClick,
+            containerColor = Color(0xFF884421),
+            contentColor = Color.White,
+            modifier = Modifier
+                .padding(16.dp)
+                .align(Alignment.BottomEnd)
+        ) {
+            Icon(Icons.Default.Add, contentDescription = "Добавить маршрут")
         }
     }
 }
